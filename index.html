@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KKGGPP · 复盘手记 | 把每一段经历，沉淀成方法论</title>
+<meta name="description" content="KKGGPP 的个人复盘网站：品牌营销、活动策划、KOC 项目复盘与方法论沉淀。">
+<style>
+  :root{
+    --navy:#16294E; --blue:#1D4ED8; --blue-light:#EEF2FB;
+    --ink:#1F2937; --muted:#6B7280; --line:#E5E7EB; --bg:#FAFBFD;
+    --card:#FFFFFF; --gold:#B48A3C;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.75}
+  .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+  a{color:var(--blue);text-decoration:none}
+  .accent-bar{display:inline-block;width:34px;height:4px;background:var(--blue);border-radius:2px;margin-bottom:12px}
+
+  /* ===== nav ===== */
+  nav{position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);z-index:50}
+  .nav-inner{max-width:900px;margin:0 auto;padding:14px 24px;display:flex;justify-content:space-between;align-items:center}
+  .logo{font-weight:700;color:var(--navy);font-size:17px;letter-spacing:.5px}
+  .logo span{color:var(--blue)}
+  .nav-links{display:flex;gap:26px;font-size:14px}
+  .nav-links a{color:var(--muted)}
+  .nav-links a:hover{color:var(--blue)}
+
+  /* ===== hero ===== */
+  header{padding:88px 0 64px;background:linear-gradient(180deg,#FFFFFF 0%,var(--bg) 100%);border-bottom:1px solid var(--line)}
+  .kicker{color:var(--blue);font-size:13px;letter-spacing:3px;font-weight:600;margin-bottom:14px}
+  h1.name{font-size:52px;color:var(--navy);letter-spacing:2px;line-height:1.15;margin-bottom:8px}
+  h1.name em{font-style:normal;color:var(--blue)}
+  .sub{font-size:19px;color:var(--ink);margin:10px 0 22px}
+  .sub b{color:var(--navy)}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:32px}
+  .chip{font-size:13px;color:var(--muted);border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 14px}
+  .btns{display:flex;gap:14px;flex-wrap:wrap}
+  .btn{display:inline-block;padding:12px 28px;border-radius:8px;font-size:15px;font-weight:600;transition:.25s}
+  .btn-primary{background:var(--blue);color:#fff}
+  .btn-primary:hover{background:#1738A8;transform:translateY(-2px);box-shadow:0 8px 20px rgba(29,78,216,.25)}
+  .btn-ghost{border:1.5px solid var(--navy);color:var(--navy)}
+  .btn-ghost:hover{background:var(--navy);color:#fff}
+
+  /* ===== stats ===== */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:-34px auto 0;position:relative;z-index:5}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 16px;text-align:center;box-shadow:0 4px 14px rgba(22,41,78,.05)}
+  .stat .num{font-size:26px;font-weight:800;color:var(--navy)}
+  .stat .num i{font-style:normal;color:var(--blue)}
+  .stat .lab{font-size:12.5px;color:var(--muted);margin-top:2px}
+
+  /* ===== sections ===== */
+  section{padding:64px 0}
+  h2.sec{font-size:28px;color:var(--navy);margin-bottom:6px}
+  .sec-desc{color:var(--muted);font-size:14.5px;margin-bottom:32px}
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px}
+  .more{font-size:14px}
+
+  /* featured cards */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px 22px;transition:.3s;display:flex;flex-direction:column}
+  .card:hover{transform:translateY(-6px);box-shadow:0 14px 32px rgba(22,41,78,.12);border-color:#C7D4F2}
+  .tag{align-self:flex-start;font-size:12px;font-weight:600;padding:4px 12px;border-radius:999px;margin-bottom:14px}
+  .tag-blue{background:var(--blue-light);color:var(--blue)}
+  .tag-gold{background:#F7EFDD;color:var(--gold)}
+  .tag-gray{background:#F3F4F6;color:#4B5563}
+  .card h3{font-size:18px;color:var(--navy);line-height:1.45;margin-bottom:10px}
+  .card p{font-size:13.5px;color:var(--muted);flex:1}
+  .card .go{margin-top:18px;font-size:14px;font-weight:600;color:var(--blue)}
+  .card .go:hover{text-decoration:underline}
+  .card .metric{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);font-size:13px;color:var(--ink)}
+  .metric b{color:var(--blue);font-size:15px}
+
+  /* featured highlight */
+  .hl-strip{margin-top:18px;background:linear-gradient(135deg,#FFF8E1 0%,#FFEFD5 100%);border:1px solid #E8C77A;border-radius:14px;padding:22px 26px;display:flex;align-items:center;gap:18px;transition:.25s}
+  .hl-strip:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 10px 26px rgba(180,138,60,.18)}
+  .hl-strip .medal{flex-shrink:0;width:52px;height:52px;background:linear-gradient(135deg,#F0C24A,#B48A3C);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700}
+  .hl-strip .txt{flex:1}
+  .hl-strip .txt b{display:block;color:#8C6420;font-size:16px;margin-bottom:4px}
+  .hl-strip .txt span{font-size:13px;color:#A07734}
+  .hl-strip .arr{font-size:14px;color:var(--gold);font-weight:600}
+  @media(max-width:600px){.hl-strip{flex-direction:column;text-align:center}}
+
+  /* timeline */
+  .tl{border-left:2px solid var(--line);margin-left:10px;padding-left:28px}
+  .tl-item{position:relative;padding-bottom:30px}
+  .tl-item::before{content:"";position:absolute;left:-35px;top:6px;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--blue)}
+  .tl-item.gold::before{border-color:var(--gold)}
+  .tl-item.gray::before{border-color:#9CA3AF}
+  .tl-date{font-size:12.5px;color:var(--blue);font-weight:600;letter-spacing:.5px}
+  .tl-item h3{font-size:16.5px;color:var(--navy);margin:3px 0}
+  .tl-item p{font-size:13.5px;color:var(--muted);max-width:620px}
+
+  /* article list */
+  .list{display:flex;flex-direction:column;gap:12px}
+  .row{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 22px;transition:.25s}
+  .row:hover{border-color:#C7D4F2;background:#FCFDFF;transform:translateX(4px)}
+  .row .t{font-size:15.5px;font-weight:600;color:var(--ink)}
+  .row .t:hover{color:var(--blue)}
+  .row .m{font-size:12.5px;color:var(--muted);white-space:nowrap;margin-left:18px}
+
+  /* about */
+  .about-box{background:var(--navy);border-radius:16px;color:#fff;padding:44px;display:grid;grid-template-columns:1.4fr 1fr;gap:36px}
+  .about-box h2{font-size:22px;margin-bottom:14px}
+  .about-box p{font-size:14.5px;color:#C9D4E8;line-height:1.9}
+  .skills{display:flex;flex-wrap:wrap;gap:9px;align-content:start}
+  .skill{font-size:12.5px;border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:5px 13px;color:#E6ECF7}
+  .skill.hl{background:var(--blue);border-color:var(--blue)}
+
+  footer{background:#0F1D38;color:#8B99B5;padding:40px 0;font-size:13.5px;text-align:center}
+  footer .fl{color:#E6ECF7;font-weight:600;font-size:15px;margin-bottom:8px}
+  footer a{color:#9DB4E8}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:.7s cubic-bezier(.2,.7,.3,1)}
+  .reveal.on{opacity:1;transform:none}
+
+  @media(max-width:760px){
+    h1.name{font-size:36px}
+    .stats{grid-template-columns:repeat(2,1fr);margin-top:24px}
+    .cards{grid-template-columns:1fr}
+    .about-box{grid-template-columns:1fr;padding:30px}
+    .nav-links{display:none}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo">KKGGPP <span>· 复盘手记</span></div>
+    <div class="nav-links">
+      <a href="#featured">精选复盘</a>
+      <a href="#journey">经历</a>
+      <a href="#articles">全部文章</a>
+      <a href="#about">关于我</a>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="wrap">
+    <div class="kicker">PORTFOLIO &amp; RETROSPECTIVE</div>
+    <h1 class="name">KKGGPP<em>.</em></h1>
+    <div class="sub">把每一段经历，<b>沉淀成方法论</b>。</div>
+    <div class="chips">
+      <span class="chip">2028 届 · 广东科技学院 · 财务管理</span>
+      <span class="chip">方向：市场品牌策划 / 活动策划</span>
+      <span class="chip">常驻：广东（深圳 / 广州 / 东莞）</span>
+    </div>
+    <div class="btns">
+      <a class="btn btn-primary" href="#featured">看我的复盘 ↓</a>
+      <a class="btn btn-ghost" href="#about">关于 KKGGPP</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><div class="num">12<i>万+</i></div><div class="lab">instax 校园 U 计划总浏览</div></div>
+    <div class="stat"><div class="num">16<i>+ 家</i></div><div class="lab">合作品牌（含百事可乐等）</div></div>
+    <div class="stat"><div class="num">20<i> 场</i></div><div class="lab">落地执行的线下活动</div></div>
+    <div class="stat"><div class="num">10<i>万+ 元</i></div><div class="lab">任期内统筹拉取赞助</div></div>
+  </div>
+</div>
+
+<section id="featured">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <div class="accent-bar"></div>
+        <h2 class="sec">精选复盘</h2>
+        <div class="sec-desc">每一段经历都用同一套结构复盘：背景 → 动作 → 结果 → 方法论沉淀。</div>
+      </div>
+    </div>
+    <div class="cards">
+      <a class="card reveal" href="articles/koc-fuji.html">
+        <span class="tag tag-blue">品牌营销 · KOC</span>
+        <h3>instax 校园 U 计划：20 位小红书达人跑出 12w+ 浏览</h3>
+        <p>富士拍立得 instax 校园 U 计划：20 位达人、20 篇小红书 UGC、磁吸卡套 + 课程表场景化内容矩阵，从招募到数据复盘全流程主导。</p>
+        <div class="metric">核心指标 <b>120,910 浏览 / 单篇最高 5.5w+</b></div>
+        <div class="go">阅读复盘 →</div>
+      </a>
+      <a class="card reveal" href="articles/sponsor-pr.html">
+        <span class="tag tag-gold">商务谈判 · 赞助</span>
+        <h3>校公关部：十大歌手 &amp; 彩虹跑的赞助是怎么谈下来的</h3>
+        <p>作为公关部负责人，覆盖 10 场大型活动、15 场校园品牌地推，单场赞助规模 1000–5w 元不等，主导赞助方案设计与品牌方谈判。</p>
+        <div class="metric">统筹赞助 <b>10w+ 元 / 16+ 家品牌</b></div>
+        <div class="go">阅读复盘 →</div>
+      </a>
+      <a class="card reveal" href="articles/tuanwei-events.html">
+        <span class="tag tag-gray">活动执行 · 政府</span>
+        <h3>街道团委实习：把「参观」做成大学生愿意来的活动</h3>
+        <p>法院旁听、消防队体验、名企走访、CityWalk——政府场景下的活动策划与执行。</p>
+        <div class="metric">组织活动 <b>20 场 / 500 人次</b>（法院旁听 / 消防体验 / 名企走访 / CityWalk）</div>
+        <div class="go">阅读复盘 →</div>
+      </a>
+    </div>
+
+    <a class="hl-strip reveal" href="articles/15g-volunteer.html">
+      <div class="medal">🏅</div>
+      <div class="txt">
+        <b>特别推荐 ｜ 第十五届全国运动会 · 优秀志愿者 · 10 天复盘</b>
+        <span>2025.11｜服务省部级领导、零差错完成国家级赛事接待保障，获学校官方表彰。</span>
+      </div>
+      <div class="arr">阅读复盘 →</div>
+    </a>
+  </div>
+</section>
+
+<section id="journey" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="accent-bar"></div>
+      <h2 class="sec">经历时间线</h2>
+      <div class="sec-desc">从执行到统筹，从校园到职场——一条「活动 + 数据 + 品牌」的主线。</div>
+    </div>
+    <div class="tl">
+      <div class="tl-item reveal">
+        <div class="tl-date">2026.01 – 2026.03</div>
+        <h3>立信会计师事务所（深圳分所）｜ 审计函证实习生</h3>
+        <p>所内独立完成函证全流程管控：询证函制作、发函、回函回收、控制表维护与差异核对。用审计级的严谨，养成数据闭环习惯。</p>
+      </div>
+      <div class="tl-item gold reveal">
+        <div class="tl-date">2025 – 2026</div>
+        <h3>富士拍立得校园大使｜ 主导 KOC 项目</h3>
+        <p>独立主导富士拍立得 instax 校园 U 计划（小红书平台），20 位达人 / 20 篇 UGC 内容累计获得 <b style="color:#fff">12w+ 浏览量</b>，单篇最高 5.5w+，跑通「招募 → 物料激励 → 内容审核 → 数据复盘」全流程。</p>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-date">2025.07 – 2025.08</div>
+        <h3>共青团东莞市东城街道工委｜ 实习生</h3>
+        <p>组织大学生社会实践系列活动：法院旁听、消防队体验、知名企业走访、CityWalk 等，负责活动全流程执行与现场统筹。</p>
+      </div>
+      <div class="tl-item gold reveal">
+        <div class="tl-date">2025.11 – 2025.12</div>
+        <h3>第十五届全国运动会｜ 行政接待志愿者 · 优秀志愿者</h3>
+        <p>大一下报名（招募时不公布岗位、统一调配），大二上正式上岗：国家级综合赛事行政接待保障，连续 10 天高强度、多线程工作，主要负责<b style="color:#fff">到访省部级领导的接待引导、动线协调与场馆公安人员餐食保障</b>等高规格工作，凭零差错表现获学校官方"优秀志愿者"表彰。</p>
+      </div>
+      <div class="tl-item gray reveal">
+        <div class="tl-date">在校</div>
+        <h3>校学生会公关部负责人 · 宣传股成员</h3>
+        <p>统筹十大歌手、彩虹跑等活动的赞助谈判：合作品牌 <b style="color:#fff">16+ 家</b>，覆盖 10 场大型活动与 15 场品牌地推，单场赞助规模 1000–5w 元，累计 <b style="color:#fff">10w+ 元</b>；同时完成推文编辑、校报编辑，内容与商务两条线并行。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="articles">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <div class="accent-bar"></div>
+        <h2 class="sec">全部文章</h2>
+        <div class="sec-desc">持续更新：项目复盘、活动案例、读书笔记。</div>
+      </div>
+    </div>
+    <div class="list">
+      <a class="row reveal" href="articles/koc-fuji.html">
+        <div class="t">instax 校园 U 计划复盘：12w+ 浏览量背后的小红书 KOC 矩阵打法</div>
+        <div class="m">品牌营销</div>
+      </a>
+      <a class="row reveal" href="articles/sponsor-pr.html">
+        <div class="t">校园活动赞助复盘：品牌方到底愿意为「校园流量」付多少钱</div>
+        <div class="m">商务谈判</div>
+      </a>
+      <a class="row reveal" href="articles/tuanwei-events.html">
+        <div class="t">街道团委活动复盘：政府场景下的活动策划怎么做才不无聊</div>
+        <div class="m">活动执行</div>
+      </a>
+      <a class="row reveal" href="articles/lixin-audit.html">
+        <div class="t">立信函证实习复盘：审计教会我的「闭环思维」如何用于市场工作</div>
+        <div class="m">实习复盘</div>
+      </a>
+      <a class="row reveal" href="articles/15g-volunteer.html">
+        <div class="t">十五运 10 天复盘：国家级赛事的行政接待是怎么打仗的</div>
+        <div class="m">志愿活动</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="about-box reveal">
+      <div>
+        <h2>关于我</h2>
+        <p>我是 KKGGPP，广东科技学院财务管理专业 2028 届学生，方向是<b style="color:#fff">市场品牌策划与活动策划</b>。</p>
+        <p style="margin-top:10px">三年校园经历里，我做过三件事：把活动从 0 落地（20+ 场团委实践）、和品牌方谈判要资源（统筹 10w+ 活动赞助）、把内容和数据串起来（主导 instax 校园 U 计划跑出 12w+ 浏览量）。财管专业和审计实习给了我数据敏感度——我习惯用数字复盘每一次策划，而不是凭感觉。</p>
+        <p style="margin-top:10px">这个网站，就是我「复盘习惯」本身的作品。</p>
+      </div>
+      <div class="skills">
+        <span class="skill hl">KOC 投放策划</span>
+        <span class="skill hl">活动全流程执行</span>
+        <span class="skill">异业赞助方案</span>
+        <span class="skill">内容选题策划</span>
+        <span class="skill">Excel 数据复盘</span>
+        <span class="skill">公众号排版</span>
+        <span class="skill">剪映 / Canva</span>
+        <span class="skill">AI 工具提效</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fl">KKGGPP · 复盘手记</div>
+  <div>邮箱：<a href="mailto:3028255565@qq.com">3028255565@qq.com</a> ｜ 微信：kgp061120 ｜ 手机：13266289815</div>
+  <div style="margin-top:6px">© 2026 KKGGPP. 把每一段经历，沉淀成方法论。</div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}})},{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
