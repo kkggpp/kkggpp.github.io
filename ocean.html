@@ -14,7 +14,8 @@
   }
   /* ================= 背景层 ================= */
   .bg{position:fixed;inset:-6% 0;background-size:cover;background-position:center;
-      will-change:transform,opacity;pointer-events:none;z-index:0}
+      will-change:transform,opacity;backface-visibility:hidden;
+      transform:translateZ(0);pointer-events:none;z-index:0}
   #bg-sea{background-image:url(assets/sea.jpg)}
   #bg-mid{background-image:url(assets/mid.jpg);opacity:0}
   #bg-under{background-image:url(assets/under.jpg);opacity:0}
@@ -518,6 +519,18 @@ window.addEventListener('error',e=>{try{document.title='ERR: '+e.message+' @'+(e
   }
   function fadeIn(x,a,b){return x<=a?0:x>=b?1:(x-a)/(b-a)}
   function fadeOut(x,a,b){return x<=a?1:x>=b?0:1-(x-a)/(b-a)}
+  /* 样式写入缓存 + 量化：避免每帧写入无限小数的 transform/opacity
+     导致大图持续亚像素重采样、backdrop-filter 反复重算（肉眼即"背景一闪一闪"） */
+  const stCache=new WeakMap();
+  function num(el,prop,v,step){
+    const q=Math.round(v/step)*step;
+    let c=stCache.get(el);if(!c){c={};stCache.set(el,c)}
+    if(c[prop]!==q){c[prop]=q;el.style[prop]=q}
+  }
+  function str(el,prop,v){
+    let c=stCache.get(el);if(!c){c={};stCache.set(el,c)}
+    if(c[prop]!==v){c[prop]=v;el.style[prop]=v}
+  }
 
   /* ============ 粒子层 ============ */
   const cv=document.getElementById('fx'),ctx=cv.getContext('2d');
@@ -539,7 +552,8 @@ window.addEventListener('error',e=>{try{document.title='ERR: '+e.message+' @'+(e
   let perf=0,last=performance.now();
   function frame(t){
     const dt=Math.min(.05,(t-last)/1000);last=t;perf+=dt;
-    if(!forced)dive+=(diveT-dive)*Math.min(1,dt*4.5);
+    if(!forced){dive+=(diveT-dive)*Math.min(1,dt*4.5);
+      if(Math.abs(diveT-dive)<.0006)dive=diveT;}   /* 收敛即锁定，杜绝无限逼近的微抖 */
     if(virtual){                    /* 虚拟滚动：内容整体平移 */
       S+=(vsT-S)*Math.min(1,dt*7.5);
       if(mainEl)mainEl.style.transform=`translateY(${(-S).toFixed(1)}px)`;
@@ -548,16 +562,18 @@ window.addEventListener('error',e=>{try{document.title='ERR: '+e.message+' @'+(e
     }
     const p=dive;
 
-    sea.style.opacity=fadeOut(p,.34,.56);
-    mid.style.opacity=fadeIn(p,.30,.54)*fadeOut(p,.62,.84);
-    under.style.opacity=fadeIn(p,.58,.84);
-    shade.style.opacity=.55+fadeIn(p,.45,1)*.45;
+    num(sea,'opacity',fadeOut(p,.34,.56),.01);
+    num(mid,'opacity',fadeIn(p,.30,.54)*fadeOut(p,.62,.84),.01);
+    num(under,'opacity',fadeIn(p,.58,.84),.01);
+    num(shade,'opacity',.55+fadeIn(p,.45,1)*.45,.01);
 
-    const sc=1.06+p*.16, ty=-p*7;
-    const drift=Math.sin(perf*.13)*1.4;         /* 水下缓慢漂移 */
-    sea.style.transform=`scale(${sc}) translateY(${ty}%)`;
-    mid.style.transform=`scale(${1.06+Math.abs(p-.5)*.1}) translateY(${ty}%)`;
-    under.style.transform=`scale(${sc+.03}) translateY(${ty+drift}%)`;
+    const ty=Math.round(-p*7*8)/8;                    /* 位移量化到 0.125% */
+    const sc=Math.round((1.06+p*.16)*200)/200;        /* 缩放量化到 0.005 */
+    /* 水下缓慢漂移：到底后冻结，且按 0.25% 步进——静止时不再产生重采样 */
+    const drift=p<.9?Math.round(Math.sin(perf*.07)*.6*4)/4:0;
+    str(sea,'transform',`scale(${sc}) translateY(${ty}%)`);
+    str(mid,'transform',`scale(${Math.round((1.06+Math.abs(p-.5)*.1)*200)/200}) translateY(${ty}%)`);
+    str(under,'transform',`scale(${sc+.03}) translateY(${Math.round((ty+drift)*4)/4}%)`);
 
     ctx.clearRect(0,0,W,H);
 
@@ -591,25 +607,28 @@ window.addEventListener('error',e=>{try{document.title='ERR: '+e.message+' @'+(e
     const m=Math.round(p*40);
     document.getElementById('depth').textContent=
       p<.02?'':(p<.4?`${m}M · 海面`:(p<.85?`${m}M · 下潜中`:`${m}M · 水底`));
-    /* 顶栏随下潜联动：加深底色 + 收紧高度 + 波浪logo呼吸加速 */
-    const dp=fadeIn(p,.1,.65);
-    tb.style.background=`rgba(4,14,25,${.28+dp*.44})`;
-    tb.style.padding=`${13-dp*4}px 28px`;
-    tb.style.borderColor=`rgba(159,220,240,${.08+dp*.22})`;
-    wave && (wave.style.opacity=.7+Math.sin(perf*(1.4+dp*2.6))*.3);
+    /* 顶栏随下潜联动：加深底色 + 收紧高度 + 波浪logo呼吸加速
+       （dp 量化：顶栏是 backdrop-filter 实时模糊区，值不停变会反复重算而闪） */
+    const dp=Math.round(fadeIn(p,.1,.65)*50)/50;
+    str(tb,'background',`rgba(4,14,25,${(.28+dp*.44).toFixed(2)})`);
+    str(tb,'padding',`${(13-dp*4).toFixed(2)}px 28px`);
+    str(tb,'borderColor',`rgba(159,220,240,${(.08+dp*.22).toFixed(2)})`);
+    wave && num(wave,'opacity',.7+Math.sin(perf*(1.4+dp*2.6))*.3,.05);
     /* HERO 分层退场：滚动视差上浮 + 动态模糊 + 鼠标微视差 */
     mx+=(mxT-mx)*Math.min(1,dt*4);my+=(myT-my)*Math.min(1,dt*4);
+    if(Math.abs(mxT-mx)<.0006)mx=mxT;
+    if(Math.abs(myT-my)<.0006)my=myT;
     const hs=forced?fp*vh()*DIVE():S, hr=hs/vh();
     layers.forEach((el,i)=>{
-      const f=fadeOut(hr,FH[i][0],FH[i][1]);
-      el.style.opacity=f;
-      el.style.pointerEvents=f<.5?'none':'';   /* 退场中不拦截点击 */
-      el.style.transform=`translate3d(${(mx*10*(i+1)).toFixed(1)}px,${(-hs*SP[i]+my*7*(i+1)).toFixed(1)}px,0)`;
-      el.style.visibility=f<=0?'hidden':'visible';
+      const fo=fadeOut(hr,FH[i][0],FH[i][1]);
+      num(el,'opacity',fo,.01);
+      str(el,'pointerEvents',fo<.5?'none':'');   /* 退场中不拦截点击 */
+      str(el,'transform',`translate3d(${(mx*10*(i+1)).toFixed(1)}px,${(-hs*SP[i]+my*7*(i+1)).toFixed(1)}px,0)`);
+      str(el,'visibility',fo<=0?'hidden':'visible');
     });
-    hero.style.filter=(RM||hr<=.03)?'':`blur(${Math.min(8,(hr-.03)*12).toFixed(1)}px)`;
-    bar.style.transform=`scaleX(${p.toFixed(3)})`;
-    document.getElementById('shint').style.opacity=p>.25?0:1;
+    str(hero,'filter',(RM||hr<=.03)?'':`blur(${Math.min(8,(hr-.03)*12).toFixed(1)}px)`);
+    str(bar,'transform',`scaleX(${(Math.round(p*200)/200).toFixed(3)})`);
+    num(document.getElementById('shint'),'opacity',p>.25?0:1,.05);
     requestAnimationFrame(frame);                 /* 主循环：逐帧驱动全部动效 */
   }
   requestAnimationFrame(frame);
