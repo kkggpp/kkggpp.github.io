@@ -481,18 +481,28 @@ window.addEventListener('error',e=>{try{document.title='ERR: '+e.message+' @'+(e
     else if(k==='Home')vsT=0;else if(k==='End')vsT=vsMax;else return;
     e.preventDefault();
   });
-  let ty0=null;
+  let ty0=null,touchN=0;
   addEventListener('touchstart',e=>{ty0=e.touches[0].clientY},{passive:true});
   addEventListener('touchmove',e=>{
     if(ty0===null)return;
     const dy=ty0-e.touches[0].clientY;ty0=e.touches[0].clientY;
-    if(!virtual){if(nativeOK)return;wheelCount+=2;enableVirtual();}
+    if(!virtual){
+      if(nativeOK)return;
+      touchN++;
+      if(touchN<8)return;              /* 连续 8 次确认原生滚动无效才启用兜底，绝不误锁触摸 */
+      enableVirtual();
+    }
     e.preventDefault();
     vsT=clampN(vsT+dy*1.7,0,vsMax);
   },{passive:false});
   const fp=parseFloat(new URLSearchParams(location.search).get('p'));
   const forced=!isNaN(fp);
   if(forced){dive=diveT=Math.min(1,Math.max(0,fp));}
+  /* 自检：?auto=1 加载后自动真实滚动，验证主循环驱动的 hero 退场（无头截图用） */
+  if(new URLSearchParams(location.search).get('auto')==='1'){
+    setTimeout(()=>scrollTo(0,vh()*.9),300);
+    setTimeout(()=>scrollTo(0,vh()*2.2),900);
+  }
   /* 调试：?y=px 平移内容区等效滚动（headless 截图用） */
   const fy=parseFloat(new URLSearchParams(location.search).get('y'));
   if(!isNaN(fy)){document.addEventListener('DOMContentLoaded',()=>{
@@ -600,6 +610,7 @@ window.addEventListener('error',e=>{try{document.title='ERR: '+e.message+' @'+(e
     hero.style.filter=(RM||hr<=.03)?'':`blur(${Math.min(8,(hr-.03)*12).toFixed(1)}px)`;
     bar.style.transform=`scaleX(${p.toFixed(3)})`;
     document.getElementById('shint').style.opacity=p>.25?0:1;
+    requestAnimationFrame(frame);                 /* 主循环：逐帧驱动全部动效 */
   }
   requestAnimationFrame(frame);
 
